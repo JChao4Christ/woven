@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Covenant — a weekly rhythm for two</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #18111f; --bg-2: #20162a; --panel: #261b31; --panel-2: #2d2139;
+    --ink: #f1e7d6; --ink-soft: #cabbac; --ink-faint: #95897c;
+    --gold: #d8af63; --gold-deep: #c0962f; --rose: #d28a7c; --sage: #8fae93;
+    --line: #392c47; --field: #1f1629;
+    --glow: rgba(216,175,99,.16);
+    --radius: 16px; --shadow: 0 26px 60px -32px rgba(0,0,0,.8);
+  }
+  [data-theme="light"] {
+    --bg: #f5ece0; --bg-2: #efe3d3; --panel: #fdf8f0; --panel-2: #f7eee1;
+    --ink: #3a2230; --ink-soft: #6c5260; --ink-faint: #9c8794;
+    --gold: #ad8330; --gold-deep: #946c1f; --rose: #bb6a5b; --sage: #5f7e63;
+    --line: #e6d7c6; --field: #fffdf8;
+    --glow: rgba(173,131,48,.12);
+    --shadow: 0 22px 50px -30px rgba(80,50,40,.45);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; color: var(--ink);
+    background:
+      radial-gradient(900px 520px at 50% -8%, var(--glow), transparent 62%),
+      radial-gradient(700px 500px at 88% 12%, rgba(210,138,124,.07), transparent 60%),
+      var(--bg);
+    font-family: "Karla", system-ui, sans-serif; line-height: 1.6; -webkit-font-smoothing: antialiased;
+    transition: background .4s, color .4s;
+  }
+  .serif { font-family: "Cormorant Garamond", Georgia, serif; }
+  h1,h2,h3 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; margin: 0; letter-spacing: .005em; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 0 22px; }
+
+  /* header */
+  header { text-align: center; padding: 50px 0 26px; position: relative; }
+  .topbar { position: absolute; top: 18px; right: 22px; display: flex; gap: 8px; }
+  .ibtn { border: 1px solid var(--line); background: var(--panel); color: var(--ink-soft); border-radius: 999px; padding: 7px 13px; font-size: 12.5px; font-weight: 600; font-family: "Karla", sans-serif; cursor: pointer; transition: .2s; }
+  .ibtn:hover { border-color: var(--gold); color: var(--gold); }
+  .flame { width: 42px; height: 42px; margin: 0 auto 8px; display: block; }
+  .kicker { font-size: 12px; letter-spacing: .32em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+  header h1 { font-size: clamp(54px, 10vw, 86px); line-height: .95; margin: 6px 0 4px; }
+  header h1 em { font-style: italic; color: var(--gold); }
+  .weekof { font-size: 15px; color: var(--ink-faint); font-style: italic; font-family: "Cormorant Garamond", serif; }
+  .names { display: inline-flex; align-items: center; gap: 14px; margin-top: 16px; font-family: "Cormorant Garamond", serif; font-size: 23px; }
+  .names .amp { color: var(--gold); font-size: 26px; }
+  .names input { background: transparent; border: none; border-bottom: 1px dashed var(--line); color: var(--ink); font-family: "Cormorant Garamond", serif; font-size: 23px; text-align: center; width: 8.5em; padding: 2px 4px; transition: .2s; }
+  .names input::placeholder { color: var(--ink-faint); font-style: italic; }
+  .names input:focus { outline: none; border-bottom-color: var(--gold); }
+
+  /* fill-as + email controls */
+  .ctrlrow { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+  .fillas { display: inline-flex; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 5px 6px 5px 14px; }
+  .fillas .fa-lab { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); font-weight: 600; }
+  .fa-opt { border: none; background: transparent; color: var(--ink-soft); font-family: "Karla", sans-serif; font-size: 13.5px; font-weight: 600; padding: 6px 14px; border-radius: 999px; cursor: pointer; transition: .18s; }
+  .fa-opt.on { background: var(--gold); color: #2a1d08; }
+  .emailbox { display: none; gap: 14px; max-width: 520px; margin: 16px auto 0; }
+  .emailbox.show { display: grid; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 560px){ .emailbox.show { grid-template-columns: 1fr; } }
+
+  .rule { display: flex; align-items: center; gap: 14px; color: var(--gold); margin: 8px 0 26px; }
+  .rule::before, .rule::after { content: ""; height: 1px; flex: 1; background: linear-gradient(90deg, transparent, var(--line), transparent); }
+  .rule span { font-size: 13px; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; }
+
+  .card { background: linear-gradient(180deg, var(--panel), var(--bg-2)); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; margin-bottom: 22px; box-shadow: var(--shadow); }
+  .card .eyebrow { font-size: 11.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--rose); font-weight: 700; }
+  .card > h2 { font-size: 30px; margin: 4px 0 4px; }
+  .card .sub { color: var(--ink-faint); font-size: 14px; margin: 0 0 20px; font-style: italic; font-family: "Cormorant Garamond", serif; }
+
+  .scripture { text-align: center; background: radial-gradient(420px 200px at 50% 0%, var(--glow), transparent 70%), linear-gradient(180deg, var(--panel-2), var(--bg-2)); }
+  .scripture .verse { font-family: "Cormorant Garamond", serif; font-style: italic; font-size: clamp(22px, 3.6vw, 30px); line-height: 1.4; color: var(--ink); max-width: 26em; margin: 6px auto 14px; }
+  .scripture .ref { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+  .scripture .ref small { color: var(--ink-faint); letter-spacing: .04em; text-transform: none; font-weight: 400; }
+  .scripture .reflect { margin-top: 16px; font-size: 14.5px; color: var(--ink-soft); max-width: 30em; margin-left: auto; margin-right: auto; }
+
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 640px) { .twocol { grid-template-columns: 1fr; } }
+  .person { border: 1px solid transparent; border-radius: 12px; padding: 6px; transition: .25s; }
+  .person.active { border-color: color-mix(in srgb, var(--gold) 45%, var(--line)); background: radial-gradient(300px 120px at 50% 0%, var(--glow), transparent 75%); }
+  .person h3 { font-size: 21px; color: var(--gold); margin-bottom: 4px; }
+  .person .who { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 12px; }
+  .person .who b { color: var(--sage); }
+  label.f { display: block; margin-bottom: 13px; }
+  label.f .lab { display: flex; align-items: center; gap: 7px; font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-faint); font-weight: 600; margin-bottom: 5px; }
+  label.f .lab .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .dot.high { background: var(--sage); } .dot.low { background: var(--rose); } .dot.ask { background: var(--gold); }
+  textarea, input.line {
+    width: 100%; font-family: "Karla", sans-serif; font-size: 14.5px; color: var(--ink);
+    background: var(--field); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; resize: vertical; line-height: 1.5;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  textarea { min-height: 62px; }
+  textarea:focus, input.line:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--glow); }
+  .lab small { color: var(--ink-faint); font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+  .gr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 640px) { .gr-grid { grid-template-columns: 1fr; } }
+  .grace-note { font-size: 13px; color: var(--sage); font-style: italic; font-family: "Cormorant Garamond", serif; margin-top: 4px; }
+
+  .deck { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .drawn { width: 100%; min-height: 132px; border-radius: 14px; border: 1px solid var(--gold-deep); background: radial-gradient(300px 140px at 50% 0%, var(--glow), transparent 70%), linear-gradient(180deg, var(--panel-2), var(--bg-2)); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 22px; position: relative; }
+  .drawn .tag { position: absolute; top: 12px; right: 14px; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); }
+  .tag.free { color: var(--sage); border-color: color-mix(in srgb, var(--sage) 50%, var(--line)); }
+  .tag.cheap { color: var(--gold); border-color: color-mix(in srgb, var(--gold) 50%, var(--line)); }
+  .tag.special { color: var(--rose); border-color: color-mix(in srgb, var(--rose) 50%, var(--line)); }
+  .drawn .idea { font-family: "Cormorant Garamond", serif; font-size: 27px; font-style: italic; color: var(--ink); max-width: 16em; }
+  .drawn .hintline { font-size: 13px; color: var(--ink-faint); margin-top: 7px; }
+  .drawbtn { background: var(--gold); color: #2a1d08; border: none; border-radius: 999px; padding: 12px 26px; font-family: "Karla", sans-serif; font-size: 14.5px; font-weight: 700; cursor: pointer; letter-spacing: .02em; transition: transform .15s, box-shadow .15s; box-shadow: 0 12px 26px -14px var(--gold-deep); }
+  .drawbtn:hover { transform: translateY(-2px); box-shadow: 0 18px 32px -16px var(--gold-deep); }
+  .ideas-all { margin-top: 6px; }
+  .ideas-all summary { cursor: pointer; color: var(--ink-faint); font-size: 13px; list-style: none; text-align: center; }
+  .ideas-all summary::-webkit-details-marker { display: none; }
+  .ideas-all ul { columns: 2; gap: 24px; padding: 14px 0 0; margin: 0; list-style: none; font-size: 13.5px; color: var(--ink-soft); }
+  @media (max-width: 540px) { .ideas-all ul { columns: 1; } }
+  .ideas-all li { padding: 4px 0; break-inside: avoid; }
+  .ideas-all li b { color: var(--ink); font-weight: 600; }
+
+  /* share / save card */
+  .sharegrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .sharegrid.two { grid-template-columns: 1fr 1fr; margin-top: 14px; }
+  @media (max-width: 560px){ .sharegrid, .sharegrid.two { grid-template-columns: 1fr; } }
+  .sbtn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center; background: var(--field); border: 1px solid var(--line); color: var(--ink); border-radius: 11px; padding: 13px 14px; font-family: "Karla", sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: .18s; text-decoration: none; }
+  .sbtn:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-1px); }
+  .sbtn.solid { background: var(--gold); color: #2a1d08; border-color: var(--gold); }
+  .sbtn.solid:hover { color: #2a1d08; }
+  .importpane { margin-top: 14px; }
+  .importpane textarea { min-height: 70px; font-family: ui-monospace, monospace; font-size: 12px; word-break: break-all; }
+  .prow { display: flex; gap: 12px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+  .filelbl { font-size: 13px; color: var(--ink-soft); border: 1px dashed var(--line); border-radius: 10px; padding: 11px 14px; cursor: pointer; transition: .18s; }
+  .filelbl:hover { border-color: var(--gold); color: var(--gold); }
+  .filelbl.wide { display: flex; align-items: center; justify-content: center; }
+  .savediv { height: 1px; background: linear-gradient(90deg, transparent, var(--line), transparent); margin: 20px 0 4px; }
+  .ministat { font-size: 12.5px; color: var(--sage); min-height: 18px; margin-top: 10px; text-align: center; }
+
+  .seal-card { text-align: center; }
+  .sealbtn { background: linear-gradient(180deg, var(--gold), var(--gold-deep)); color: #2a1d08; border: none; border-radius: 999px; padding: 15px 40px; font-family: "Karla", sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 16px 34px -16px var(--gold-deep); transition: transform .15s; }
+  .sealbtn:hover { transform: translateY(-2px); }
+  .blessing { font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 19px; color: var(--ink-soft); max-width: 28em; margin: 0 auto 20px; }
+  .savedflash { font-size: 13px; color: var(--sage); height: 18px; margin-top: 12px; transition: opacity .4s; }
+
+  .hist details { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; background: var(--field); overflow: hidden; }
+  .hist summary { cursor: pointer; list-style: none; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; font-family: "Cormorant Garamond", serif; font-size: 19px; gap: 10px; }
+  .hist summary::-webkit-details-marker { display: none; }
+  .hist summary .wk { color: var(--gold); font-size: 14px; }
+  .hist .body { padding: 8px 18px 18px; font-size: 14px; color: var(--ink-soft); border-top: 1px solid var(--line); }
+  .hist .body .h-row { padding: 8px 0; border-bottom: 1px dashed var(--line); }
+  .hist .body .h-row:last-child { border-bottom: none; }
+  .hist .body .h-k { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 2px; }
+  .hist .body .h-edit { margin-bottom: 12px; }
+  .hist .body .h-edit .h-k { margin-bottom: 4px; }
+  .hist .h-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+  .hist .h-actions button { font-family: "Karla", sans-serif; font-size: 12.5px; font-weight: 600; border-radius: 8px; padding: 7px 13px; cursor: pointer; border: 1px solid var(--line); background: var(--panel); color: var(--ink-soft); transition: .18s; }
+  .hist .h-actions button:hover { border-color: var(--gold); color: var(--gold); }
+  .hist .h-actions button.danger:hover { border-color: var(--rose); color: var(--rose); }
+  .hist .h-actions button.save { background: var(--gold); color: #2a1d08; border-color: var(--gold); }
+  .hist .empty { text-align: center; color: var(--ink-faint); font-style: italic; font-family: "Cormorant Garamond", serif; font-size: 17px; padding: 14px; }
+
+  footer { text-align: center; padding: 30px 0 64px; color: var(--ink-faint); font-size: 12.5px; }
+  footer .priv { color: var(--sage); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="topbar"><button class="ibtn" id="themeBtn">☾ Dark</button></div>
+    <svg class="flame" viewBox="0 0 24 32" fill="none" aria-hidden="true">
+      <path d="M12 1C12 1 4 9 4 18a8 8 0 0016 0c0-4-3-7-3-11 0 0-3 3-3 6 0-5-2-8-2-12z" fill="var(--gold)" opacity=".92"/>
+      <path d="M12 10c0 0-3 4-3 8a3 3 0 006 0c0-2-1.5-3-1.5-5 0 0-1.5 1.5-1.5 3 0-2-0-4 0-6z" fill="var(--rose)" opacity=".9"/>
+    </svg>
+    <div class="kicker">A weekly rhythm for two</div>
+    <h1>Coven<em>ant</em></h1>
+    <div class="weekof" id="weekof">— the week of —</div>
+    <div class="names">
+      <input id="nameA" placeholder="Justin" aria-label="Your name">
+      <span class="amp">&amp;</span>
+      <input id="nameB" placeholder="Vanessa" aria-label="Their name">
+    </div>
+    <div class="ctrlrow">
+      <div class="fillas">
+        <span class="fa-lab">I'm filling as</span>
+        <button class="fa-opt" data-fa="a" id="faA">You</button>
+        <button class="fa-opt" data-fa="b" id="faB">Them</button>
+      </div>
+      <button class="ibtn" id="emailToggle">✉ Our emails</button>
+    </div>
+    <div class="emailbox" id="emailbox">
+      <label class="f"><span class="lab">Your email</span><input class="line" id="emailA" placeholder="you@example.com"></label>
+      <label class="f"><span class="lab">Their email</span><input class="line" id="emailB" placeholder="them@example.com"></label>
+    </div>
+  </header>
+
+  <div class="rule"><span>This week</span></div>
+
+  <section class="card scripture">
+    <div class="eyebrow">Word over us</div>
+    <p class="verse" id="verseText">…</p>
+    <div class="ref" id="verseRef">…</div>
+    <p class="reflect" id="verseReflect">…</p>
+  </section>
+
+  <section class="card">
+    <div class="eyebrow">The honest part</div>
+    <h2>State of Us</h2>
+    <p class="sub">Each of you, in your own words — on your own device is fine. No fixing yet; just being heard.</p>
+    <div class="twocol">
+      <div class="person" id="personA">
+        <h3 id="hA">You</h3>
+        <div class="who" id="whoA">in your words</div>
+        <label class="f"><span class="lab"><span class="dot high"></span> A high — the best of our week</span><textarea data-k="a_high"></textarea></label>
+        <label class="f"><span class="lab"><span class="dot low"></span> A low — where it was hard</span><textarea data-k="a_low"></textarea></label>
+        <label class="f"><span class="lab"><span class="dot ask"></span> One ask — what I need next week</span><textarea data-k="a_ask"></textarea></label>
+      </div>
+      <div class="person" id="personB">
+        <h3 id="hB">Them</h3>
+        <div class="who" id="whoB">in their words</div>
+        <label class="f"><span class="lab"><span class="dot high"></span> A high — the best of our week</span><textarea data-k="b_high"></textarea></label>
+        <label class="f"><span class="lab"><span class="dot low"></span> A low — where it was hard</span><textarea data-k="b_low"></textarea></label>
+        <label class="f"><span class="lab"><span class="dot ask"></span> One ask — what I need next week</span><textarea data-k="b_ask"></textarea></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="eyebrow">Name the good</div>
+    <h2>Gratitude</h2>
+    <p class="sub">One thing about the other you don't want to take for granted.</p>
+    <div class="gr-grid">
+      <label class="f"><span class="lab">I'm grateful, this week, that you…</span><textarea data-k="a_grat"></textarea></label>
+      <label class="f"><span class="lab">I'm grateful, this week, that you…</span><textarea data-k="b_grat"></textarea></label>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="eyebrow">Mend &amp; release</div>
+    <h2>Repair</h2>
+    <p class="sub">Confession and forgiveness, not scorekeeping. Grace covers a multitude.</p>
+    <div class="gr-grid">
+      <label class="f"><span class="lab">Something I want to own / make right</span><textarea data-k="own"></textarea><span class="grace-note">— spoken honestly, received gently —</span></label>
+      <label class="f"><span class="lab">Something I release / forgive</span><textarea data-k="forgive"></textarea><span class="grace-note">— let it not carry into next week —</span></label>
+    </div>
+  </section>
+
+  <div class="rule"><span>Then delight</span></div>
+
+  <section class="card">
+    <div class="eyebrow">Plan the joy · South Bay</div>
+    <h2>Draw a date</h2>
+    <p class="sub">One idea for this week. Don't overthink it — just pick the night.</p>
+    <div class="deck">
+      <div class="drawn" id="drawn">
+        <span class="tag" id="drawnTag">—</span>
+        <div class="idea" id="drawnIdea">Tap below to draw your week's date.</div>
+        <div class="hintline" id="drawnHint"></div>
+      </div>
+      <button class="drawbtn" id="drawBtn">✦ Draw a date</button>
+      <details class="ideas-all"><summary>see all ideas</summary><ul id="ideaList"></ul></details>
+      <label class="f" style="width:100%; margin-top:6px;"><span class="lab">Our pick &amp; when</span><input class="line" data-k="datepick" placeholder="e.g. Friday — sunset walk at the Rose Garden"></label>
+    </div>
+  </section>
+
+  <div class="rule"><span>Two devices, one heart</span></div>
+
+  <!-- Share / send / save -->
+  <section class="card">
+    <div class="eyebrow">Trade &amp; keep</div>
+    <h2>Share, send &amp; save</h2>
+    <p class="sub">Fill your side on your own, then trade answers so you both see everything.</p>
+    <div class="sharegrid">
+      <button class="sbtn" id="emailWeek">✉ Email the week to us</button>
+      <button class="sbtn" id="sendMine">➤ Send my answers to <span id="partnerLbl">them</span></button>
+      <button class="sbtn" id="copyCode">⧉ Show / copy my answer code</button>
+      <button class="sbtn" id="importToggle">⤵ Import their answers</button>
+    </div>
+
+    <div id="codePane" class="importpane" hidden>
+      <textarea id="myCode" readonly></textarea>
+      <div class="ministat">↑ Your answer code — send it to your partner (the “Send” button drafts the email for you).</div>
+    </div>
+
+    <div id="importPane" class="importpane" hidden>
+      <textarea id="importCode" placeholder="Paste your partner's answer code here…"></textarea>
+      <div class="prow">
+        <button class="sbtn solid" id="doImport">Merge their answers</button>
+        <label class="filelbl">load a .json file<input type="file" id="importFile" accept=".json,.covenant" hidden></label>
+      </div>
+    </div>
+
+    <div class="savediv"></div>
+    <div class="sharegrid two">
+      <button class="sbtn" id="backupBtn">⬇ Back up our record</button>
+      <label class="filelbl wide" for="restoreFile">⤴ Restore from a backup file</label>
+      <input type="file" id="restoreFile" accept=".json,.covenant" hidden>
+    </div>
+    <div class="ministat" id="shareStat"></div>
+  </section>
+
+  <section class="card seal-card">
+    <div class="eyebrow">Close the week</div>
+    <h2 style="margin-bottom:14px;">Seal it</h2>
+    <p class="blessing">"And above all things be earnest in your love among yourselves, for love covers a multitude of sins." Go in grace — saved to your shared record, and begun again next week.</p>
+    <button class="sealbtn" id="sealBtn">⚝ Seal this week</button>
+    <div class="savedflash" id="flash"></div>
+  </section>
+
+  <div class="rule"><span>Our record</span></div>
+
+  <section class="card hist">
+    <div class="eyebrow">Weeks behind us</div>
+    <h2 style="margin-bottom:16px;">History <small style="font-size:14px; color:var(--ink-faint); font-style:italic;">— editable</small></h2>
+    <div id="histList"></div>
+  </section>
+
+  <footer>
+    Covenant · a private weekly rhythm. <span class="priv">Everything stays in this browser — nothing is sent anywhere unless you press an email button.</span><br>
+    Scripture: World English Bible (public domain). Made with care · 2026.
+  </footer>
+</div>
+
+<script>
+/* ---------- verified scripture (public domain, World English Bible) ---------- */
+const VERSES = [
+  { t: "Above all these things, walk in love, which is the bond of perfection.", r: "Colossians 3:14", x: "Love isn't one virtue among many this week — it's the thread that ties the rest together." },
+  { t: "And be kind to one another, tender hearted, forgiving each other, just as God also in Christ forgave you.", r: "Ephesians 4:32", x: "Forgive at the size you've been forgiven — not by what was deserved." },
+  { t: "Love is patient and is kind. Love doesn't envy. Love doesn't brag, is not proud… is not provoked, takes no account of evil.", r: "1 Corinthians 13:4–5", x: "Read it slowly, as a mirror, not a measuring stick for the other." },
+  { t: "Two are better than one… and a threefold cord is not quickly broken.", r: "Ecclesiastes 4:9,12", x: "You, them, and God — the third strand is what holds when two would fray." },
+  { t: "And above all things be earnest in your love among yourselves, for love covers a multitude of sins.", r: "1 Peter 4:8", x: "Cover, not catalogue. Let love do the covering this week." },
+  { t: "Bear one another's burdens, and so fulfill the law of Christ.", r: "Galatians 6:2", x: "Whose load is heavier this week? Name it, and pick up an end of it." },
+  { t: "We love him, because he first loved us.", r: "1 John 4:19", x: "You don't have to manufacture love — you get to pass on what you've already received." },
+  { t: "Therefore accept one another, even as Christ also accepted you, to the glory of God.", r: "Romans 15:7", x: "Welcome them as you've been welcomed — before they've earned it." },
+  { t: "…in humility, each counting others better than himself.", r: "Philippians 2:3", x: "One small place this week to put their good ahead of your own." },
+  { t: "Set me as a seal on your heart, as a seal on your arm; for love is as strong as death… Many waters can't quench love.", r: "Song of Songs 8:6–7", x: "A covenant, not a mood. Sealed, and stronger than the hard weeks." },
+  { t: "He who finds a wife finds a good thing, and obtains favor from Yahweh.", r: "Proverbs 18:22", x: "Today, see the gift again — not the routine it became." },
+  { t: "Let us not love in word only, or with the tongue only, but in deed and truth.", r: "1 John 3:18", x: "Pick one love that is a verb this week, not a sentence." }
+];
+
+const IDEAS = [
+  { i: "Sunset walk through the Municipal Rose Garden", t: "free", h: "Golden hour, 4,000 roses, no phones." },
+  { i: "Paddle boats + a picnic at Vasona Lake", t: "cheap", h: "Los Gatos. Pack the blanket." },
+  { i: "A slow dinner crawl through Japantown", t: "cheap", h: "Then coffee at Roy's Station." },
+  { i: "Hike the hills at Alum Rock Park", t: "free", h: "Early, before the heat." },
+  { i: "Tea and pastries in downtown Los Gatos", t: "cheap", h: "Window-shop the whole street." },
+  { i: "Drive up for the city lights from the East hills", t: "free", h: "Bring a thermos. Talk till late." },
+  { i: "Cook a brand-new recipe together at home", t: "free", h: "One of you sous-chefs, no takeout rescue." },
+  { i: "Evening stroll + dessert at Santana Row", t: "cheap", h: "Split one thing too sweet." },
+  { i: "Saturday farmers market, hand in hand", t: "cheap", h: "Campbell or downtown SJ." },
+  { i: "Stargazing toward Mt. Hamilton / Grant Ranch", t: "free", h: "Dark skies, a blanket, no agenda." },
+  { i: "Bike the Los Gatos Creek Trail end to end", t: "free", h: "Coffee at the turnaround." },
+  { i: "A worship + prayer night, just the two of you", t: "free", h: "Two songs, one psalm, one honest prayer." },
+  { i: "Sunrise climb up the Communications Hill steps", t: "free", h: "Coffee waiting in the car at the top." },
+  { i: "Browse Recycle Bookstore, pick a book for each other", t: "cheap", h: "Read the first page aloud." },
+  { i: "A paint-and-sip / pottery class date", t: "special", h: "Keep the lopsided mug forever." },
+  { i: "Serve together — a shift at church or a food bank", t: "free", h: "Love outward, side by side." },
+  { i: "Weekend morning at the Japanese Friendship Garden", t: "cheap", h: "Kelley Park koi and quiet." },
+  { i: "A real dinner out — dress up like it's the first date", t: "special", h: "No kids talk for one hour." }
+];
+
+const SHARED_KEYS = ["own","forgive","datepick"];
+const PERSON_SUFFIX = ["high","low","ask","grat"];
+
+/* ---------- week helpers ---------- */
+function weekId(d) {
+  const dt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = dt.getUTCDay() || 7;
+  dt.setUTCDate(dt.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(dt.getUTCFullYear(), 0, 1));
+  const wk = Math.ceil((((dt - yearStart) / 86400000) + 1) / 7);
+  return dt.getUTCFullYear() + "-W" + String(wk).padStart(2, "0");
+}
+function mondayOf(d){ const x=new Date(d); const day=(x.getDay()+6)%7; x.setDate(x.getDate()-day); return x; }
+function fmtRange(d){ const mon=mondayOf(d), sun=new Date(mon); sun.setDate(mon.getDate()+6); const o={month:"long",day:"numeric"}; return mon.toLocaleDateString(undefined,o)+" – "+sun.toLocaleDateString(undefined,o)+", "+sun.getFullYear(); }
+
+const NOW = new Date();
+const WID = weekId(NOW);
+const RANGE = fmtRange(NOW);
+document.getElementById("weekof").textContent = "the week of " + RANGE;
+
+function hashStr(s){ let h=0; for(let i=0;i<s.length;i++){ h=(h*31 + s.charCodeAt(i))|0; } return Math.abs(h); }
+const wv = VERSES[hashStr(WID) % VERSES.length];
+document.getElementById("verseText").textContent = "“" + wv.t + "”";
+document.getElementById("verseRef").innerHTML = wv.r + "  <small>· WEB</small>";
+document.getElementById("verseReflect").textContent = wv.x;
+
+/* ---------- persistence ---------- */
+const STORE = "covenant-os-v2";
+function loadAll(){ try { return JSON.parse(localStorage.getItem(STORE) || "{}"); } catch(e){ return {}; } }
+function saveAll(o){ localStorage.setItem(STORE, JSON.stringify(o)); }
+let DB = loadAll();
+DB.names = DB.names || {};
+if (DB.names.a == null || DB.names.a === "") DB.names.a = "Justin";
+if (DB.names.b == null || DB.names.b === "") DB.names.b = "Vanessa";
+DB.settings = DB.settings || {};
+DB.weeks = DB.weeks || {};
+DB.history = DB.history || [];
+DB.fillAs = DB.fillAs || "a";
+let cur = DB.weeks[WID] || (DB.weeks[WID] = {});
+saveAll(DB);
+
+/* names */
+const nameA = document.getElementById("nameA"), nameB = document.getElementById("nameB");
+nameA.value = DB.names.a || ""; nameB.value = DB.names.b || "";
+function partnerKey(){ return DB.fillAs === "a" ? "b" : "a"; }
+function syncNames(){
+  const A = DB.names.a || "You", B = DB.names.b || "Them";
+  document.getElementById("hA").textContent = A;
+  document.getElementById("hB").textContent = B;
+  document.getElementById("faA").textContent = DB.names.a || "You";
+  document.getElementById("faB").textContent = DB.names.b || "Them";
+  document.getElementById("partnerLbl").textContent = (partnerKey()==="a" ? (DB.names.a||"them") : (DB.names.b||"them"));
+}
+[["a",nameA],["b",nameB]].forEach(([k,el]) => el.addEventListener("input", () => { DB.names[k]=el.value; saveAll(DB); syncNames(); }));
+
+/* emails */
+const emailA = document.getElementById("emailA"), emailB = document.getElementById("emailB");
+emailA.value = DB.settings.emailA || ""; emailB.value = DB.settings.emailB || "";
+emailA.addEventListener("input", () => { DB.settings.emailA = emailA.value; saveAll(DB); });
+emailB.addEventListener("input", () => { DB.settings.emailB = emailB.value; saveAll(DB); });
+document.getElementById("emailToggle").addEventListener("click", () => {
+  document.getElementById("emailbox").classList.toggle("show");
+});
+
+/* fill-as */
+function syncFillAs(){
+  document.getElementById("faA").classList.toggle("on", DB.fillAs==="a");
+  document.getElementById("faB").classList.toggle("on", DB.fillAs==="b");
+  document.getElementById("personA").classList.toggle("active", DB.fillAs==="a");
+  document.getElementById("personB").classList.toggle("active", DB.fillAs==="b");
+  document.getElementById("whoA").innerHTML = DB.fillAs==="a" ? "<b>this is you</b>" : "in their words";
+  document.getElementById("whoB").innerHTML = DB.fillAs==="b" ? "<b>this is you</b>" : "in their words";
+  syncNames();
+}
+document.querySelectorAll(".fa-opt").forEach(b => b.addEventListener("click", () => { DB.fillAs=b.dataset.fa; saveAll(DB); syncFillAs(); }));
+
+/* field bindings */
+function bind(){
+  document.querySelectorAll("[data-k]").forEach(el => {
+    const k = el.dataset.k;
+    if (cur[k] != null) el.value = cur[k];
+    el.addEventListener("input", () => { cur[k] = el.value; DB.weeks[WID] = cur; saveAll(DB); });
+  });
+}
+function refreshFields(){
+  document.querySelectorAll("[data-k]").forEach(el => { el.value = cur[el.dataset.k] || ""; });
+}
+bind();
+
+/* date ideas */
+const list = document.getElementById("ideaList");
+list.innerHTML = IDEAS.map(x => `<li><b>${x.i}</b> — <span style="color:var(--ink-faint)">${x.h}</span></li>`).join("");
+const drawn = { tag: document.getElementById("drawnTag"), idea: document.getElementById("drawnIdea"), hint: document.getElementById("drawnHint") };
+let lastIdx = -1;
+function draw(){ let n; do { n=Math.floor(Math.random()*IDEAS.length); } while(n===lastIdx && IDEAS.length>1); lastIdx=n; const x=IDEAS[n]; drawn.tag.textContent=x.t; drawn.tag.className="tag "+x.t; drawn.idea.textContent=x.i; drawn.hint.textContent=x.h; }
+document.getElementById("drawBtn").addEventListener("click", draw);
+
+/* ---------- share / merge ---------- */
+function b64encode(obj){ return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); }
+function b64decode(code){ return JSON.parse(decodeURIComponent(escape(atob(code.trim())))); }
+function encodeMine(){
+  const who = DB.fillAs;
+  const fields = {};
+  PERSON_SUFFIX.forEach(s => { const k = who+"_"+s; if (cur[k]) fields[k]=cur[k]; });
+  SHARED_KEYS.forEach(k => { if (cur[k]) fields[k]=cur[k]; });
+  return b64encode({ v:2, app:"covenant", week:WID, who, name: DB.names[who]||"", fields });
+}
+function importPayload(obj){
+  if (!obj || obj.app!=="covenant" || !obj.fields) throw new Error("That doesn't look like a Covenant answer code.");
+  Object.entries(obj.fields).forEach(([k,v]) => {
+    if (SHARED_KEYS.includes(k)) { if (!cur[k]) cur[k]=v; }   // don't clobber shared answers you already wrote
+    else { cur[k]=v; }                                        // their high/low/ask/grat
+  });
+  if (obj.who && obj.name && !DB.names[obj.who]) DB.names[obj.who]=obj.name;
+  DB.weeks[WID]=cur; saveAll(DB); refreshFields(); syncNames();
+  const wkNote = obj.week && obj.week!==WID ? ` (note: their code was for ${obj.week}, merged into this week)` : "";
+  return (obj.name || "Their") + " answers merged — you can both see everything now." + wkNote;
+}
+const shareStat = document.getElementById("shareStat");
+function status(msg){ shareStat.textContent = msg; }
+
+document.getElementById("copyCode").addEventListener("click", () => {
+  const code = encodeMine();
+  const ta = document.getElementById("myCode"); ta.value = code;
+  document.getElementById("codePane").hidden = false;
+  if (navigator.clipboard) navigator.clipboard.writeText(code).then(()=>status("Your answer code is copied — paste it to your partner."), ()=>{ ta.select(); status("Select the code above and copy it."); });
+  else { ta.select(); status("Select the code above and copy it."); }
+});
+
+document.getElementById("importToggle").addEventListener("click", () => {
+  const p = document.getElementById("importPane"); p.hidden = !p.hidden;
+});
+document.getElementById("doImport").addEventListener("click", () => {
+  try { status(importPayload(b64decode(document.getElementById("importCode").value))); }
+  catch(e){ status("⚠ " + e.message); }
+});
+document.getElementById("importFile").addEventListener("change", e => {
+  const f = e.target.files[0]; if(!f) return; const r = new FileReader();
+  r.onload = () => { try { const j = JSON.parse(r.result); status(importPayload(j.app ? j : b64decode(j))); } catch(err){ status("⚠ Couldn't read that file."); } };
+  r.readAsText(f);
+});
+
+/* mailto */
+function mailto(to, subject, body){ return "mailto:" + (to||"") + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body); }
+document.getElementById("emailWeek").addEventListener("click", () => {
+  const to = [DB.settings.emailA, DB.settings.emailB].filter(Boolean).join(",");
+  if (!to) { document.getElementById("emailbox").classList.add("show"); return status("Add your emails above first (✉ Our emails)."); }
+  const body = "“"+wv.t+"”  — "+wv.r+"\n\n"+wv.x+"\n\nTime for our weekly Covenant check-in. Open our Covenant page, fill your side, then send me your answer code.\n\n— with love";
+  window.location.href = mailto(to, "Covenant — our week of " + RANGE, body);
+});
+document.getElementById("sendMine").addEventListener("click", () => {
+  const pe = partnerKey()==="a" ? DB.settings.emailA : DB.settings.emailB;
+  const myName = DB.names[DB.fillAs] || "me";
+  const code = encodeMine();
+  const body = "Here are my answers for our Covenant check-in.\n\nOpen the Covenant page → “Import their answers” → paste this code:\n\n"+code+"\n\nLove you.";
+  if (!pe) { document.getElementById("emailbox").classList.add("show"); status("Add your partner's email above first (✉ Our emails)."); }
+  window.location.href = mailto(pe||"", "Covenant — "+myName+"'s answers ("+RANGE+")", body);
+});
+
+/* backup / restore */
+function download(name, text){ const b=new Blob([text],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); a.remove(); }
+document.getElementById("backupBtn").addEventListener("click", () => { download("covenant-record-"+WID+".json", JSON.stringify(DB,null,2)); status("Backed up — keep the file somewhere safe."); });
+document.getElementById("restoreFile").addEventListener("change", e => {
+  const f = e.target.files[0]; if(!f) return;
+  if (!confirm("Restore from this file? It replaces what's currently saved in this browser.")) { e.target.value=""; return; }
+  const r = new FileReader(); r.onload = () => { try { const j=JSON.parse(r.result); if(!j.weeks && !j.history) throw 0; localStorage.setItem(STORE, JSON.stringify(j)); location.reload(); } catch(err){ status("⚠ That isn't a Covenant backup file."); } };
+  r.readAsText(f);
+});
+
+/* ---------- seal ---------- */
+const flash = document.getElementById("flash");
+document.getElementById("sealBtn").addEventListener("click", () => {
+  const snap = { week: WID, range: RANGE, verse: wv.r, data: { ...cur }, names: { ...DB.names } };
+  DB.history = DB.history.filter(h => h.week !== WID);
+  DB.history.unshift(snap);
+  saveAll(DB); renderHist();
+  flash.style.opacity = 1; flash.textContent = "Sealed. Grace go with you both. ♡";
+  setTimeout(() => { flash.style.opacity = 0; }, 3200);
+});
+
+/* ---------- history (editable) ---------- */
+const histList = document.getElementById("histList");
+let editIdx = -1;
+function fieldDefs(h){
+  const a = h.names?.a || "You", b = h.names?.b || "Them";
+  return [
+    ["a_high", a+" — high"], ["b_high", b+" — high"],
+    ["a_low", a+" — low"], ["b_low", b+" — low"],
+    ["a_ask", a+" — ask"], ["b_ask", b+" — ask"],
+    ["a_grat", a+" grateful"], ["b_grat", b+" grateful"],
+    ["own","Owned / made right"], ["forgive","Released / forgave"], ["datepick","Date"]
+  ];
+}
+function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function renderHist(){
+  if (!DB.history.length){ histList.innerHTML = `<div class="empty">No weeks sealed yet — your record begins this Sunday.</div>`; return; }
+  histList.innerHTML = DB.history.map((h,idx) => {
+    const d = h.data || {}; const defs = fieldDefs(h);
+    let inner;
+    if (idx === editIdx) {
+      inner = defs.map(([k,lab]) => `<div class="h-edit"><div class="h-k">${lab}</div><textarea data-eh="${k}">${esc(d[k])}</textarea></div>`).join("")
+        + `<div class="h-actions"><button class="save" data-act="save" data-i="${idx}">Save changes</button><button data-act="cancel">Cancel</button></div>`;
+    } else {
+      const rows = defs.filter(([k]) => d[k]).map(([k,lab]) => `<div class="h-row"><div class="h-k">${lab}</div>${esc(d[k])}</div>`).join("");
+      inner = (rows || `<div class="h-row" style="color:var(--ink-faint)">No entries recorded.</div>`)
+        + `<div class="h-actions"><button data-act="edit" data-i="${idx}">✎ Edit</button><button class="danger" data-act="del" data-i="${idx}">Delete</button></div>`;
+    }
+    return `<details ${idx===editIdx?"open":""}><summary><span>${h.range || h.week}</span><span class="wk">${h.verse||""}</span></summary><div class="body">${inner}</div></details>`;
+  }).join("");
+}
+histList.addEventListener("click", e => {
+  const btn = e.target.closest("button[data-act]"); if(!btn) return;
+  const act = btn.dataset.act, i = +btn.dataset.i;
+  if (act==="edit"){ editIdx = i; renderHist(); }
+  else if (act==="cancel"){ editIdx = -1; renderHist(); }
+  else if (act==="del"){ if(confirm("Delete this sealed week from your record?")){ DB.history.splice(i,1); editIdx=-1; saveAll(DB); renderHist(); } }
+  else if (act==="save"){
+    const det = btn.closest("details");
+    det.querySelectorAll("[data-eh]").forEach(t => { DB.history[i].data[t.dataset.eh] = t.value; });
+    editIdx = -1; saveAll(DB); renderHist();
+  }
+});
+renderHist();
+
+/* ---------- theme ---------- */
+const root = document.documentElement, tb = document.getElementById("themeBtn");
+const st = localStorage.getItem("covenant-theme"); if (st) root.setAttribute("data-theme", st);
+function syncT(){ tb.textContent = root.getAttribute("data-theme")==="dark" ? "☾ Dark" : "☀ Light"; }
+tb.addEventListener("click", () => { const n = root.getAttribute("data-theme")==="dark"?"light":"dark"; root.setAttribute("data-theme", n); localStorage.setItem("covenant-theme", n); syncT(); });
+syncT();
+
+/* init */
+syncFillAs();
+</script>
+</body>
+</html>
